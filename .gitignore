@@ -1,3 +1,9 @@
+# Vim swap files
+*.swp
+
+# Jetbrains files
+.idea
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
