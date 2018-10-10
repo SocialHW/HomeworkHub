@@ -1,3 +1,7 @@
+/**
+ * Entry point into the HomeworkHub web server.
+ *
+ */
 package main
 
 import (
