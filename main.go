@@ -5,6 +5,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -17,6 +18,7 @@ func init() {
 }
 
 func main() {
+	/* Route for index page */
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 		err := tpl.ExecuteTemplate(w, "index.gohtml", nil)
 
@@ -27,9 +29,12 @@ func main() {
 		}
 	})
 
-
-
+	// Route for static assets
 	http.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir("./static"))))
+
+	http.HandleFunc("/h/", func(w http.ResponseWriter, req *http.Request) {
+		fmt.Fprintf(w, "Path is: %s", req.URL.Path)
+	})
 
 	port := ":3000"
 
