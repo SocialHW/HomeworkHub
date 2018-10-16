@@ -5,7 +5,6 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -32,12 +31,35 @@ func main() {
 	// Route for static assets
 	http.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir("./static"))))
 
+	/* Route for posts */
 	http.HandleFunc("/h/", func(w http.ResponseWriter, req *http.Request) {
-		fmt.Fprintf(w, "Path is: %s", req.URL.Path)
+		// fmt.Fprintf(w, "Path is: %s", req.URL.Path)
+
+		hw := homework{
+			PostImage: "image1.jpeg",
+			Upvotes:   0,
+			Downvotes: 99,
+			Comments:  []string{"This post is great!", "No, it really isn't"},
+		}
+
+		err := tpl.ExecuteTemplate(w, "homework.gohtml", hw)
+
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
 	})
 
 	port := ":3000"
 
 	log.Printf("Server running on port %s...\n", port)
 	http.ListenAndServe(port, nil)
+}
+
+type homework struct {
+	PostImage string
+	Upvotes   int
+	Downvotes int
+	Comments  []string
 }
