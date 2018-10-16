@@ -27,6 +27,12 @@ func main() {
 		}
 	})
 
-	log.Println("Server running...")
-	http.ListenAndServe(":3000", nil)
+
+
+	http.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir("./static"))))
+
+	port := ":3000"
+
+	log.Printf("Server running on port %s...\n", port)
+	http.ListenAndServe(port, nil)
 }
