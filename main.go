@@ -33,11 +33,10 @@ func main() {
 
 	/* Route for posts */
 	http.HandleFunc("/h/", func(w http.ResponseWriter, req *http.Request) {
-		// fmt.Fprintf(w, "Path is: %s", req.URL.Path)
 
 		hw := homework{
 			PostImage: "image1.jpeg",
-			Upvotes:   0,
+			Upvotes:   1,
 			Downvotes: 99,
 			Comments:  []string{"This post is great!", "No, it really isn't"},
 		}
