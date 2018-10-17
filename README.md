@@ -55,4 +55,5 @@ git flow feature start <feature-name>
 
 This will create a new branch named `feature/<feature-name>`, and checkout that branch so you can immediately start work
 on it. When the feature is finished and you would like to merge, make sure you have commited and pushed all of your
-changes, and head to GitHub where you can make a new pull request for that feature.
+changes, and head to GitHub where you can make a new pull request for that feature. Make sure to merge into the develop
+branch.
