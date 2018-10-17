@@ -1,15 +1,13 @@
 {{template "header"}}
+    <p>
+        <div>PostImage: {{.PostImage}}</div>
 
-{{define "homework"}}
+        <div>Upvotes: {{.Upvotes}}</div>
 
-PostImage: {{.PostImage}}
+        <div>Downvotes: {{.Downvotes}}</div>
 
-Upvotes: {{.Upvotes}}
+        <div>Comments: {{range .Comments}} {{.}} {{end}}</div>
 
-Downvotes: {{.Downvotes}}
-
-Comments: {{.Comments}}
-
-{{end}}
+    </p>
 
 {{template "footer"}}

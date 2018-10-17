@@ -58,7 +58,7 @@ func main() {
 
 type homework struct {
 	PostImage string
-	Upvotes   int
-	Downvotes int
+	Upvotes   uint
+	Downvotes uint
 	Comments  []string
 }
