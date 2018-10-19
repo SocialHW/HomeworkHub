@@ -1,6 +1,7 @@
 {{template "header"}}
+<div>
     <p>
-        <div>PostImage: {{.PostImage}}</div>
+        <div>PostImage: <img src="/static/img/{{.PostImage}}" style="max-height: 40vh"></div>
 
         <div>Upvotes: {{.Upvotes}}</div>
 
@@ -8,6 +9,26 @@
 
         <div>Comments: {{range .Comments}} {{.}} {{end}}</div>
 
+        <div id="tags">
+            Tags:
+                <script type="application/javascript">
+
+                    const arr = [ {{range .Tags}} {{.}}, {{end}} ];
+
+
+                        for(let i = 0; i < arr.length; i++) {
+                            const elem = arr[i];
+                            if(i < arr.length - 1) {
+                                $("#tags").append(elem, ", ");
+                            } else {
+                                $("#tags").append(elem);
+                            }
+                        }
+
+                </script>
+        </div>
+
     </p>
 
+</div>
 {{template "footer"}}

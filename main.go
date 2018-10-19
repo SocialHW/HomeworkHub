@@ -39,6 +39,7 @@ func main() {
 			Upvotes:   1,
 			Downvotes: 99,
 			Comments:  []string{"This post is great!", "No, it really isn't"},
+			Tags:      []string{"2018", "MAT", "413", "Andriamanalimanana"},
 		}
 
 		err := tpl.ExecuteTemplate(w, "homework.gohtml", hw)
@@ -61,4 +62,5 @@ type homework struct {
 	Upvotes   uint
 	Downvotes uint
 	Comments  []string
+	Tags      []string
 }
