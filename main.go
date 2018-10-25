@@ -17,6 +17,7 @@ func init() {
 }
 
 func main() {
+	/* Route for index page */
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 		err := tpl.ExecuteTemplate(w, "index.gohtml", nil)
 
@@ -27,12 +28,39 @@ func main() {
 		}
 	})
 
-
-
+	// Route for static assets
 	http.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir("./static"))))
+
+	/* Route for posts */
+	http.HandleFunc("/h/", func(w http.ResponseWriter, req *http.Request) {
+
+		hw := homework{
+			PostImage: "image1.jpeg",
+			Upvotes:   1,
+			Downvotes: 99,
+			Comments:  []string{"This post is great!", "No, it really isn't"},
+			Tags:      []string{"2018", "MAT", "413", "Andriamanalimanana"},
+		}
+
+		err := tpl.ExecuteTemplate(w, "homework.gohtml", hw)
+
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+	})
 
 	port := ":3000"
 
 	log.Printf("Server running on port %s...\n", port)
 	http.ListenAndServe(port, nil)
+}
+
+type homework struct {
+	PostImage string
+	Upvotes   uint
+	Downvotes uint
+	Comments  []string
+	Tags      []string
 }
