@@ -8,17 +8,7 @@
     </div>
 
     <div class="row">
-        <div class="col-9">
-            <div class="jumbotron post">
-                <a href="/h/123">
-                    <h3>[CS][370][Confer] First Homework</h3>
-                    <div class="preview">
-                        <img class="img-fluid"
-                             src="/static/img/image1.jpeg">
-                    </div>
-                </a>
-            </div>
-        </div>
+        {{range .Posts}} {{template "post_listing" .}} {{end}}
 
         <div class="col-3">
             <!-- Subfile system -->
