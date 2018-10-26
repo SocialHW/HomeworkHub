@@ -1,11 +1,7 @@
 {{template "header"}}
 
 <div class="container">
-    <div class="header">
-        <h1><a href="/">Social HW</a></h1>
-
-        <span id="account-prompt"><a href="#">Login</a> or <a href="#">Register</a></span>
-    </div>
+    {{template "top_bar"}}
 
     <div class="row">
         {{range .Posts}} {{template "post_listing" .}} {{end}}
