@@ -1,22 +1,10 @@
 {{template "header"}}
 
 <div class="container">
-    <div class="header">
-        <h1>Social HW</h1>
-
-        <span id="account-prompt"><a href="#">Login</a> or <a href="#">Register</a></span>
-    </div>
+    {{template "top_bar"}}
 
     <div class="row">
-        <div class="col-9">
-            <div class="jumbotron post">
-                <h3>[CS][370][Confer] First Homework</h3>
-                <div class="preview">
-                    <img class="img-fluid"
-                         src="/static/img/image1.jpeg">
-                </div>
-            </div>
-        </div>
+        {{range .Posts}} {{template "post_listing" .}} {{end}}
 
         <div class="col-3">
             <!-- Subfile system -->

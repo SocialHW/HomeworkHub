@@ -19,7 +19,19 @@ func init() {
 func main() {
 	/* Route for index page */
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		err := tpl.ExecuteTemplate(w, "index.gohtml", nil)
+		err := tpl.ExecuteTemplate(w, "index.gohtml", struct{ Posts []homework }{
+			[]homework{
+				{
+					Id:        123,
+					Title:     "[CS][370][Confer] First Homework",
+					PostImage: "image1.jpeg",
+					Upvotes:   1,
+					Downvotes: 99,
+					Comments:  []string{"This post is great!", "No, it really isn't"},
+					Tags:      []string{"2018", "MAT", "413", "Andriamanalimanana"},
+				},
+			},
+		})
 
 		if err != nil {
 			log.Println(err)
@@ -35,6 +47,8 @@ func main() {
 	http.HandleFunc("/h/", func(w http.ResponseWriter, req *http.Request) {
 
 		hw := homework{
+			Id:        123,
+			Title:     "[CS][370][Confer] First Homework",
 			PostImage: "image1.jpeg",
 			Upvotes:   1,
 			Downvotes: 99,
@@ -58,6 +72,8 @@ func main() {
 }
 
 type homework struct {
+	Id        uint
+	Title     string
 	PostImage string
 	Upvotes   uint
 	Downvotes uint
