@@ -25,8 +25,6 @@ func main() {
 					Id:        123,
 					Title:     "[CS][370][Confer] First Homework",
 					PostImage: "image1.jpeg",
-					Upvotes:   1,
-					Downvotes: 99,
 					Comments:  []string{"This post is great!", "No, it really isn't"},
 					Tags:      []string{"2018", "MAT", "413", "Andriamanalimanana"},
 				},
@@ -50,8 +48,6 @@ func main() {
 			Id:        123,
 			Title:     "[CS][370][Confer] First Homework",
 			PostImage: "image1.jpeg",
-			Upvotes:   1,
-			Downvotes: 99,
 			Comments:  []string{"This post is great!", "No, it really isn't"},
 			Tags:      []string{"2018", "MAT", "413", "Andriamanalimanana"},
 		}
@@ -75,8 +71,6 @@ type homework struct {
 	Id        uint
 	Title     string
 	PostImage string
-	Upvotes   uint
-	Downvotes uint
 	Comments  []string
 	Tags      []string
 }
