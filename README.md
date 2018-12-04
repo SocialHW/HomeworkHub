@@ -13,21 +13,9 @@ Download the source using the command:
 git clone https://github.com/SocialHW/HomeworkHub.git
 ``` 
 
-Installing the required dependencies to run (such as MySQL):
-
-```bash
-cd HomeworkHub/
-sh init/init.sh
-```
+Running this project no longer requires any external dependencies to be running, such as MySQL.
 
 ## Building and Running
-
-The project depends on the existence of a local instance of MySQL running. To start MySQL after it is installed, 
-run the command:
-
-```bash
-sh init/start_db.sh
-```
 
 To run the project as a Go script, simply run this command from the root directory of the project:
 
