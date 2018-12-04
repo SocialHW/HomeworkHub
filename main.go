@@ -26,7 +26,6 @@ func main() {
 					Title:     "[CS][370][Confer] First Homework",
 					PostImage: "image1.jpeg",
 					Comments:  []string{"This post is great!", "No, it really isn't"},
-					Tags:      []string{"2018", "MAT", "413", "Andriamanalimanana"},
 				},
 			},
 		})
@@ -49,7 +48,6 @@ func main() {
 			Title:     "[CS][370][Confer] First Homework",
 			PostImage: "image1.jpeg",
 			Comments:  []string{"This post is great!", "No, it really isn't"},
-			Tags:      []string{"2018", "MAT", "413", "Andriamanalimanana"},
 		}
 
 		err := tpl.ExecuteTemplate(w, "homework.gohtml", hw)
@@ -72,5 +70,4 @@ type homework struct {
 	Title     string
 	PostImage string
 	Comments  []string
-	Tags      []string
 }
