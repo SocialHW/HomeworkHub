@@ -10,7 +10,7 @@ import (
 var database *sql.DB
 
 func main() {
-	intitalize_DB()
+	initialize_DB()
 	http.Handle("/", http.FileServer(http.Dir("static/")))
 
 	log.Println("Server running...")
