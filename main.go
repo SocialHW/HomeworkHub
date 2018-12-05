@@ -5,6 +5,7 @@
 package main
 
 import (
+	"database/sql"
 	"html/template"
 	"log"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 var (
 	tpl           *template.Template
 	authenticated = false
+	database      *sql.DB
 )
 
 func init() {
