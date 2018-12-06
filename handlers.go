@@ -8,14 +8,22 @@ import (
 )
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		http.ServeFile(w, r, "templates/register.html")
+	if authenticated {
+		http.Redirect(w, r, "/", 301)
 		return
 	}
+
+	if r.Method != "POST" {
+		err := tpl.ExecuteTemplate(w, "register.gohtml", nil)
+		checkInternalServerError(err, w)
+
+		return
+	}
+
 	// grab user info
 	username := r.FormValue("username")
 	password := r.FormValue("password")
-	role := r.FormValue("role")
+
 	// Check existence of user
 	var user User
 	err := database.QueryRow("SELECT username, password, role FROM users WHERE username=?",
@@ -28,7 +36,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		checkInternalServerError(err, w)
 		// insert to database
 		_, err = database.Exec(`INSERT INTO users(username, password, role) VALUES(?, ?, ?)`,
-			username, password, role)
+			username, password)
 		fmt.Println("Created user: ", username)
 		checkInternalServerError(err, w)
 	case err != nil:
@@ -40,23 +48,36 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		http.ServeFile(w, r, "templates/login.html")
+	if authenticated {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-	//// grab user info from the submitted form
-	//username := r.FormValue("usrname")
-	//password := r.FormValue("psw")
-	//// query database to get match username
-	//var user User
-	//err := database.QueryRow("SELECT username, password FROM users WHERE username=?",
-	//	username).Scan(&user.Username, &user.Password)
-	//checkInternalServerError(err, w)
-	//// validate password
+
+	if r.Method != "POST" {
+		err := tpl.ExecuteTemplate(w, "login.gohtml", nil)
+		checkInternalServerError(err, w)
+
+		return
+	}
+
+	// grab user info from the submitted form
+	username := r.FormValue("usrname")
+	password := r.FormValue("psw")
+
+	// query database to get match username
+	var user User
+	err := database.QueryRow("SELECT username, password FROM users WHERE username=?",
+		username).Scan(&user.Username, &user.Password)
+
+	checkInternalServerError(err, w)
+
+	// validate password
 	//err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
-	//if err != nil {
-	//	http.Redirect(w, r, "/login", 301)
-	//}
+
+	if err != nil || password != user.Password {
+		http.Redirect(w, r, "/login", 301)
+	}
+
 	authenticated = true
 	http.Redirect(w, r, "/", 301)
 
@@ -72,6 +93,7 @@ func listHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		http.Error(w, "Method not allowed", http.StatusBadRequest)
 	}
+
 	//rows, err := database.Query("SELECT * FROM homework")
 	//checkInternalServerError(err, w)
 	//var funcMap = tpl.FuncMap{
@@ -97,7 +119,7 @@ func listHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func createHandler(w http.ResponseWriter, r *http.Request) {
+func newPost(w http.ResponseWriter, r *http.Request) {
 	isAuthenticated(w, r)
 	if r.Method != "POST" {
 		http.Redirect(w, r, "/", 301)
