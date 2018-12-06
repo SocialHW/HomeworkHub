@@ -148,16 +148,13 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := tpl.ExecuteTemplate(w, "index.gohtml", indexData)
 
-	if err != nil {
-		log.Println(err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
+	checkInternalServerError(err, w)
 
 }
 
 func postViewHandler(w http.ResponseWriter, req *http.Request) {
 
+	// TODO: Build this struct based on the information from the database
 	hw := Homework{
 		Id:        123,
 		Title:     "[CS][370][Confer] First Homework",
@@ -167,15 +164,12 @@ func postViewHandler(w http.ResponseWriter, req *http.Request) {
 
 	err := tpl.ExecuteTemplate(w, "homework.gohtml", hw)
 
-	if err != nil {
-		log.Println(err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
+	checkInternalServerError(err, w)
 }
 
 func checkInternalServerError(err error, w http.ResponseWriter) {
 	if err != nil {
+		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
