@@ -26,17 +26,18 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check existence of user
 	var user User
-	err := database.QueryRow("SELECT username, password, role FROM users WHERE username=?",
+	err := database.QueryRow("SELECT username, password",
 		username).Scan(&user.Username, &user.Password)
 
 	switch {
 	// user is available
 	case err == sql.ErrNoRows:
 		//hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-		checkInternalServerError(err, w)
+		//checkInternalServerError(err, w)
 		// insert to database
-		_, err = database.Exec(`INSERT INTO users(username, password, role) VALUES(?, ?, ?)`,
+		_, err = database.Exec(`INSERT INTO users(username, password) VALUES(?, ?)`,
 			username, password)
+
 		fmt.Println("Created user: ", username)
 		checkInternalServerError(err, w)
 	case err != nil:
@@ -49,7 +50,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	if authenticated {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/", http.StatusMovedPermanently)
 		return
 	}
 
@@ -75,11 +76,11 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	//err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 
 	if err != nil || password != user.Password {
-		http.Redirect(w, r, "/login", 301)
+		http.Redirect(w, r, "/login", http.StatusMovedPermanently)
 	}
 
 	authenticated = true
-	http.Redirect(w, r, "/", 301)
+	http.Redirect(w, r, "/", http.StatusMovedPermanently)
 
 }
 
