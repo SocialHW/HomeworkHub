@@ -41,8 +41,12 @@ func registerDataHandler(w http.ResponseWriter, r *http.Request) {
 		//hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		//checkInternalServerError(err, w)
 		// insert to database
-		_, err = database.Exec(`INSERT INTO users(username, password) VALUES(?, ?)`,
-			username, password)
+		err = database.Ping()
+		if err != nil {
+			panic(err)
+		}
+		statement, _ := database.Prepare("INSERT INTO userinfo(username, password) VALUES(?, ?)")
+		statement.Exec(username, password)
 
 		fmt.Println("Created user: ", username)
 		checkInternalServerError(err, w)
