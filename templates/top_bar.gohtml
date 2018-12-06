@@ -2,6 +2,10 @@
     <div class="header">
         <h1><a href="/">Social HW</a></h1>
 
-        <span id="account-prompt"><a href="#">Login</a> or <a href="#">Register</a></span>
+        {{if not .Authenticated}}
+            <span id="account-prompt"><a href="/login">Login</a> or <a href="register">Register</a></span>
+        {{else}}
+            <span id="account-prompt"><a href="/logout">Logout</a></span>
+        {{end}}
     </div>
 {{end}}
