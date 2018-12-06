@@ -15,10 +15,10 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	// grab user info
 	username := r.FormValue("username")
 	password := r.FormValue("password")
-	role := r.FormValue("role")
+
 	// Check existence of user
 	var user User
-	err := database.QueryRow("SELECT username, password, role FROM users WHERE username=?",
+	err := database.QueryRow("SELECT username, password",
 		username).Scan(&user.Username, &user.Password)
 
 	switch {
@@ -27,7 +27,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		//hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		checkInternalServerError(err, w)
 		// insert to database
-		_, err = database.Exec(`INSERT INTO users(username, password, role) VALUES(?, ?, ?)`,
+		_, err = database.Exec(`INSERT INTO users(username, password) VALUES(?, ?)`,
 			username, password, role)
 		fmt.Println("Created user: ", username)
 		checkInternalServerError(err, w)
