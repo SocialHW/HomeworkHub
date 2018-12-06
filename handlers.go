@@ -58,7 +58,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	//	http.Redirect(w, r, "/login", 301)
 	//}
 	authenticated = true
-	http.Redirect(w, r, "/list", 301)
+	http.Redirect(w, r, "/", 301)
 
 }
 
