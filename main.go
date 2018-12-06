@@ -5,65 +5,40 @@
 package main
 
 import (
+	"database/sql"
+	_ "github.com/mattn/go-sqlite3"
 	"html/template"
 	"log"
 	"net/http"
 )
 
-var tpl *template.Template
+var (
+	tpl           *template.Template
+	authenticated = false
+	database      *sql.DB
+)
 
 func init() {
 	tpl = template.Must(template.ParseGlob("templates/*.gohtml"))
 }
 
 func main() {
-	/* Route for index page */
-	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		err := tpl.ExecuteTemplate(w, "index.gohtml", struct{ Posts []homework }{
-			[]homework{
-				{
-					Id:        123,
-					Title:     "[CS][370][Confer] First Homework",
-					PostImage: "image1.jpeg",
-					Upvotes:   1,
-					Downvotes: 99,
-					Comments:  []string{"This post is great!", "No, it really isn't"},
-					Tags:      []string{"2018", "MAT", "413", "Andriamanalimanana"},
-				},
-			},
-		})
+	initialize_DB()
 
-		if err != nil {
-			log.Println(err)
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-			return
-		}
-	})
+	/* Route for index page */
+	http.HandleFunc("/", indexHandler)
 
 	// Route for static assets
 	http.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir("./static"))))
 
-	/* Route for posts */
-	http.HandleFunc("/h/", func(w http.ResponseWriter, req *http.Request) {
+	// Route for posts
+	http.HandleFunc("/h/", postViewHandler)
 
-		hw := homework{
-			Id:        123,
-			Title:     "[CS][370][Confer] First Homework",
-			PostImage: "image1.jpeg",
-			Upvotes:   1,
-			Downvotes: 99,
-			Comments:  []string{"This post is great!", "No, it really isn't"},
-			Tags:      []string{"2018", "MAT", "413", "Andriamanalimanana"},
-		}
-
-		err := tpl.ExecuteTemplate(w, "homework.gohtml", hw)
-
-		if err != nil {
-			log.Println(err)
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-			return
-		}
-	})
+	http.HandleFunc("/login/", loginHandler)
+	http.HandleFunc("/logout/", logoutHandler)
+	http.HandleFunc("/register/", registerHandler)
+	http.HandleFunc("/list/", listHandler)
+	http.HandleFunc("/create/", createHandler)
 
 	port := ":3000"
 
@@ -71,12 +46,12 @@ func main() {
 	http.ListenAndServe(port, nil)
 }
 
-type homework struct {
-	Id        uint
-	Title     string
-	PostImage string
-	Upvotes   uint
-	Downvotes uint
-	Comments  []string
-	Tags      []string
+func initialize_DB() {
+	database, _ = sql.Open("sqlite3", "./homeworkHub.db")
+	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS userInfo (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT)")
+	statement.Exec()
+	statement, _ = database.Prepare("CREATE TABLE IF NOT EXISTS post_info (post_id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, title TEXT, file_path TEXT)")
+	statement.Exec()
+	statement, _ = database.Prepare("CREATE TABLE IF NOT EXISTS comment_section (post_id INTEGER, username TEXT, comment TEXT)")
+	statement.Exec()
 }
