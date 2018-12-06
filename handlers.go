@@ -19,7 +19,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	// Check existence of user
 	var user User
 	err := database.QueryRow("SELECT username, password, role FROM users WHERE username=?",
-		username).Scan(&user.Username, &user.Password, &user.Role)
+		username).Scan(&user.Username, &user.Password)
 
 	switch {
 	// user is available
@@ -127,35 +127,33 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	if true {
-		posts := []Homework{
-			{
-				Id:        123,
-				Title:     "[CS][370][Confer] First Homework",
-				PostImage: "image1.jpeg",
-				Comments:  []string{"This post is great!", "No, it really isn't"},
-			},
-		}
 
-		indexData := struct {
-			Authenticated bool
-			Posts         []Homework
-		}{
-			authenticated,
-			posts,
-		}
-
-		err := tpl.ExecuteTemplate(w, "index.gohtml", indexData)
-
-		if err != nil {
-			log.Println(err)
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-			return
-		}
-
+	// TODO: Query the database to populate this array.
+	posts := []Homework{
+		{
+			Id:        123,
+			Title:     "[CS][370][Confer] First Homework",
+			PostImage: "image1.jpeg",
+			Comments:  []string{"This post is great!", "No, it really isn't"},
+		},
 	}
 
-	//http.Redirect(w, r, "/list", 301)
+	indexData := struct {
+		Authenticated bool
+		Posts         []Homework
+	}{
+		authenticated,
+		posts,
+	}
+
+	err := tpl.ExecuteTemplate(w, "index.gohtml", indexData)
+
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
 }
 
 func postViewHandler(w http.ResponseWriter, req *http.Request) {
