@@ -3,20 +3,22 @@
 <div class="w3-container w3-teal">
     <h2>Register</h2>
 </div>
-<form action="/register" method="post">
-    <label class="w3-label">Username</label>
-    <input type="text" class="w3-input" name="username" required>
+<form action="/register/data" method="post">
+    <label >Usernaeme</label>
+    <input type="text" name="username" required>
     <br>
 
-    <label class="w3-label">Password</label>
-    <input type="password" class="w3-input" name="password" required>
+    <label >Password</label>
+    <input type="password" name="password" required>
     <br>
 
-    <label class="w3-label">Password again</label>
-    <input type="password" class="w3-input" name="passwordAgain" required>
+    <label>Password again</label>
+    <input type="password" name="passwordAgain" required>
+    <br>
 
-    <div class="w3-right w3-margin-top w3-margin-bottom">
-        <button class="w3-btn w3-teal" type="submit">Register</button>
+    <button class="w3-btn w3-teal" type="submit">Register</button>
+    <div>
+
         <a href="/login">Login</a>
     </div>
 </form>

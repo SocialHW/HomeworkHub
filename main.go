@@ -37,6 +37,7 @@ func main() {
 	http.HandleFunc("/login/", loginHandler)
 	http.HandleFunc("/logout/", logoutHandler)
 	http.HandleFunc("/register/", registerHandler)
+	http.HandleFunc("/register/data", registerDataHandler)
 	http.HandleFunc("/list/", listHandler)
 	http.HandleFunc("/create/", newPost)
 

@@ -8,21 +8,27 @@ import (
 )
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
-	if authenticated {
-		http.Redirect(w, r, "/", 301)
-		return
-	}
-
 	if r.Method != "POST" {
+		if authenticated {
+			http.Redirect(w, r, "/", http.StatusMovedPermanently)
+			return
+		}
+
 		err := tpl.ExecuteTemplate(w, "register.gohtml", nil)
 		checkInternalServerError(err, w)
 
 		return
 	}
+}
+
+func registerDataHandler(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
 
 	// grab user info
 	username := r.FormValue("username")
 	password := r.FormValue("password")
+
+	fmt.Printf("Name entered: %s \tPass entered: %s\n", username, password)
 
 	// Check existence of user
 	var user User
@@ -49,12 +55,12 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	if authenticated {
-		http.Redirect(w, r, "/", http.StatusMovedPermanently)
-		return
-	}
-
 	if r.Method != "POST" {
+		if authenticated {
+			http.Redirect(w, r, "/", http.StatusMovedPermanently)
+			return
+		}
+
 		err := tpl.ExecuteTemplate(w, "login.gohtml", nil)
 		checkInternalServerError(err, w)
 
