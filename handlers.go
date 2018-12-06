@@ -45,8 +45,8 @@ func registerDataHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			panic(err)
 		}
-		statement, _ := database.Prepare("INSERT INTO userinfo(username, password) VALUES(?, ?)")
-		statement.Exec(username, password)
+
+		_, err = database.Exec("INSERT INTO userInfo(username, password) VALUES(?, ?);", username, password)
 
 		fmt.Println("Created user: ", username)
 		checkInternalServerError(err, w)
