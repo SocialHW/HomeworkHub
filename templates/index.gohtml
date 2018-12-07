@@ -1,7 +1,7 @@
 {{template "header"}}
 
 <div class="container">
-    {{template "top_bar"}}
+    {{template "top_bar" .}}
 
     <div class="row">
         {{range .Posts}} {{template "post_listing" .}} {{end}}

@@ -7,6 +7,8 @@ import (
 )
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("Register method: %s\n", r.Method)
+
 	if r.Method != "POST" {
 		if authenticated {
 			http.Redirect(w, r, "/", http.StatusMovedPermanently)
@@ -18,16 +20,6 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-
-	registerDataHandler(w, r)
-}
-
-func registerDataHandler(w http.ResponseWriter, r *http.Request) {
-	//err = r.ParseForm()
-	//
-	//if err != nil {
-	//	panic(err)
-	//}
 
 	// grab user info
 	username := r.FormValue("username")
@@ -64,6 +56,9 @@ func registerDataHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Printf("login method: %s\n", r.Method)
+
 	if r.Method != "POST" {
 		if authenticated {
 			http.Redirect(w, r, "/", http.StatusMovedPermanently)
@@ -77,8 +72,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// grab user info from the submitted form
-	username := r.FormValue("usrname")
-	password := r.FormValue("psw")
+	username := r.FormValue("username")
+	password := r.FormValue("password")
 
 	// query database to get match username
 	var user User
@@ -104,39 +99,11 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	isAuthenticated(w, r)
 }
 
-func listHandler(w http.ResponseWriter, r *http.Request) {
-	isAuthenticated(w, r)
-	if r.Method != "GET" {
-		http.Error(w, "Method not allowed", http.StatusBadRequest)
-	}
-
-	//rows, err := database.Query("SELECT * FROM homework")
-	//checkInternalServerError(err, w)
-	//var funcMap = tpl.FuncMap{
-	//	"multiplication": func(n float64, f float64) float64 {
-	//		return n * f
-	//	},
-	//	"addOne": func(n int) int {
-	//		return n + 1
-	//	},
-	//}
-	//var homeworks []Homework
-	//var homework Homework
-	//for rows.Next() {
-	//	err = rows.Scan(&homework.Id, &homework.ElectricAmount,
-	//		&homework.ElectricPrice, &homework.WaterAmount, &homework.WaterPrice, &homework.CheckedDate)
-	//	checkInternalServerError(err, w)
-	//	homeworks = append(homeworks, homework)
-	//}
-	//t, err := tpl.New("list.html").Funcs(funcMap).ParseFiles("templates/list.html")
-	//checkInternalServerError(err, w)
-	//err = t.Execute(w, homeworks)
-	//checkInternalServerError(err, w)
-
-}
-
 func newPost(w http.ResponseWriter, r *http.Request) {
 	isAuthenticated(w, r)
+
+	fmt.Printf("new post method: %s\n", r.Method)
+
 	if r.Method != "POST" {
 		http.Redirect(w, r, "/", http.StatusMovedPermanently)
 	}
