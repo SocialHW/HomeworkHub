@@ -1,32 +1,32 @@
 body {
-	margin-top: 2em;
+    margin-top: 2em;
     font-family: 'Nanum Gothic', sans-serif;
 }
 
 .post {
-	padding-top: 1em;
+    padding-top: 1em;
 }
 
 a {
-	color: black;
+    color: black;
 }
 
 .preview {
-	max-width: 5em;
+    max-width: 5em;
 }
 
 .preview:hover {
-	max-width: 100%;
+    max-width: 100%;
 }
 
 #account-prompt {
-	float: right;
+    float: right;
 }
 
 .header > h1 {
-	float: left;
+    float: left;
 }
 
 .header {
-	display: flow-root;
+    display: flow-root;
 }

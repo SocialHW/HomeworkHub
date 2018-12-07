@@ -25,6 +25,12 @@ func init() {
 
 func main() {
 	initializeDb()
+	defer func() {
+		err = database.Close()
+		if err != nil {
+			panic(err)
+		}
+	}()
 
 	/* Route for index page */
 	http.HandleFunc("/", indexHandler)

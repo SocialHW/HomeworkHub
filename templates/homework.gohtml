@@ -1,18 +1,18 @@
 {{template "header"}}
 
-    <div class="container">
+<div class="container">
 
-        {{template "top_bar"}}
+    {{template "top_bar"}}
 
-        <p>
-            <div>PostImage: <img src="/static/img/{{.PostImage}}" style="max-height: 40vh"></div>
-
-
-            <div>Comments: {{range .Comments}} {{.}} {{end}}</div>
+    <p>
+    <div>PostImage: <img src="/static/img/{{.PostImage}}" style="max-height: 40vh"></div>
 
 
-        </p>
+    <div>Comments: {{range .Comments}} {{.}} {{end}}</div>
 
-    </div>
+
+    </p>
+
+</div>
 
 {{template "footer"}}
