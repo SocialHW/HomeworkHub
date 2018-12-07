@@ -47,6 +47,7 @@ func main() {
 	http.HandleFunc("/logout", logoutHandler)
 	http.HandleFunc("/register", registerHandler)
 	http.HandleFunc("/upload", uploadHandler)
+	http.HandleFunc("/comment/", commentHandler)
 
 	port := ":3000"
 

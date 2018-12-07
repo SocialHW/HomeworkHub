@@ -181,7 +181,6 @@ func indexHandler(w http.ResponseWriter, _ *http.Request) {
 }
 
 func postViewHandler(w http.ResponseWriter, r *http.Request) {
-
 	var post Homework
 
 	post.Id, _ = strconv.ParseInt(strings.Replace(r.URL.Path, "/h/", "", 1), 10, 32)
@@ -191,13 +190,37 @@ func postViewHandler(w http.ResponseWriter, r *http.Request) {
 
 	checkInternalServerError(err, w)
 
+	var comments []string
+
+	rows, err := database.Query("SELECT comment FROM commentSection WHERE postId=?;", post.Id)
+
+	for rows.Next() {
+		var curComment string
+		if err := rows.Scan(&curComment); err != nil {
+			log.Fatal(err)
+		}
+
+		comments = append(comments, curComment)
+	}
+
 	hw := Homework{
+		Id:        post.Id,
 		Title:     post.Title,
 		PostImage: fmt.Sprintf("%d%s", post.Id, post.Extension),
-		Comments:  []string{"This post is great!", "No, it really isn't"},
+		Comments:  comments,
 	}
 
 	err = tpl.ExecuteTemplate(w, "homework.gohtml", hw)
 
 	checkInternalServerError(err, w)
+}
+
+func commentHandler(w http.ResponseWriter, r *http.Request) {
+
+	id, _ := strconv.ParseInt(strings.Replace(r.URL.Path, "/comment/", "", 1), 10, 32)
+
+	_, err = database.Exec("INSERT INTO commentSection(postId, comment) VALUES(?, ?);", id, r.FormValue("comment"))
+
+	http.Redirect(w, r, fmt.Sprintf("/h/%d", id), http.StatusMovedPermanently)
+
 }
