@@ -164,6 +164,8 @@ func indexHandler(w http.ResponseWriter, _ *http.Request) {
 		if err := rows.Scan(&curPost.Id, &curPost.Username, &curPost.Title, &curPost.Extension); err != nil {
 			log.Fatal(err)
 		}
+
+		curPost.PostImage = fmt.Sprintf("%d%s", curPost.Id, curPost.Extension)
 		posts = append(posts, curPost)
 	}
 
