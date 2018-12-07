@@ -1,20 +1,15 @@
 package main
 
 type Homework struct {
-	Id        int64
-	Title     string
-	PostImage string
-	Comments  []string
+	Id        int64    `json:"id"`
+	Title     string   `json:"title"`
+	Username  string   `json:"username"`
+	PostImage string   `json:"postImage"`
+	Extension string   `json:"extension"`
+	Comments  []string `json:"comments"`
 }
 
 type User struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
-}
-
-type Post struct {
-	Id        int64  `json:"id"`
-	Username  string `json:"username"`
-	Title     string `json:"title"`
-	Extension string `json:"title"`
 }

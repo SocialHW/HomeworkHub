@@ -102,7 +102,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	checkInternalServerError(err, w)
 
-	var post Post
+	var post Homework
 
 	post.Username = user.Username
 
@@ -154,13 +154,17 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 func indexHandler(w http.ResponseWriter, _ *http.Request) {
 
 	// TODO: Query the database to populate this array.
-	posts := []Homework{
-		{
-			Id:        123,
-			Title:     "[CS][370][Confer] First Homework",
-			PostImage: "image1.jpeg",
-			Comments:  []string{"This post is great!", "No, it really isn't"},
-		},
+
+	var posts []Homework
+
+	rows, err := database.Query("SELECT * FROM postInfo")
+
+	for rows.Next() {
+		var curPost Homework
+		if err := rows.Scan(&curPost.Id, &curPost.Username, &curPost.Title, &curPost.Extension); err != nil {
+			log.Fatal(err)
+		}
+		posts = append(posts, curPost)
 	}
 
 	indexData := struct {
@@ -171,7 +175,7 @@ func indexHandler(w http.ResponseWriter, _ *http.Request) {
 		posts,
 	}
 
-	err := tpl.ExecuteTemplate(w, "index.gohtml", indexData)
+	err = tpl.ExecuteTemplate(w, "index.gohtml", indexData)
 
 	checkInternalServerError(err, w)
 
@@ -179,7 +183,7 @@ func indexHandler(w http.ResponseWriter, _ *http.Request) {
 
 func postViewHandler(w http.ResponseWriter, r *http.Request) {
 
-	var post Post
+	var post Homework
 
 	post.Id, _ = strconv.ParseInt(strings.Replace(r.URL.Path, "/h/", "", 1), 10, 32)
 
