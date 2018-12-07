@@ -141,26 +141,10 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	checkInternalServerError(err, w)
 
 	defer f.Close()
-	io.Copy(f, file)
+	_, err = io.Copy(f, file)
+	checkInternalServerError(err, w)
 
 	fmt.Println(post)
-
-	// Save to database
-	//stmt, err := database.Prepare(`
-	//	INSERT INTO cost(electric_amount, electric_price, water_amount, water_price, checked_date)
-	//	VALUES(?, ?, ?, ?, ?)
-	//`)
-
-	//if err != nil {
-	//	fmt.Println("Prepare query error")
-	//	panic(err)
-	//}
-	//_, err = stmt.Exec(cost.ElectricAmount, cost.ElectricPrice,
-	//	cost.WaterAmount, cost.WaterPrice, cost.CheckedDate)
-	//if err != nil {
-	//	fmt.Println("Execute query error")
-	//	panic(err)
-	//}
 
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
