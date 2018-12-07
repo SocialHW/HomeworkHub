@@ -152,9 +152,6 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func indexHandler(w http.ResponseWriter, _ *http.Request) {
-
-	// TODO: Query the database to populate this array.
-
 	var posts []Homework
 
 	rows, err := database.Query("SELECT * FROM postInfo")
@@ -194,7 +191,6 @@ func postViewHandler(w http.ResponseWriter, r *http.Request) {
 
 	checkInternalServerError(err, w)
 
-	// TODO: Build this struct based on the information from the database
 	hw := Homework{
 		Title:     post.Title,
 		PostImage: fmt.Sprintf("%d%s", post.Id, post.Extension),
