@@ -4,7 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
+	"io"
 	"net/http"
+	"os"
 )
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
@@ -44,7 +46,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "loi: "+err.Error(), http.StatusBadRequest)
 		return
 	default:
-		http.Redirect(w, r, "/login", http.StatusMovedPermanently)
+		http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 	}
 }
 
@@ -74,11 +76,11 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 
 	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusMovedPermanently)
+		http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 	}
 
 	authenticated = true
-	http.Redirect(w, r, "/", http.StatusMovedPermanently)
+	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 
 }
 
@@ -87,16 +89,44 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	isAuthenticated(w, r)
 }
 
-func newPost(w http.ResponseWriter, r *http.Request) {
+func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	isAuthenticated(w, r)
 
-	fmt.Printf("new post method: %s\n", r.Method)
+	fmt.Printf("Upload method: %s\n", r.Method)
 
-	if r.Method != "POST" {
-		http.Redirect(w, r, "/", http.StatusMovedPermanently)
+	if r.Method == "GET" {
+
+		err := tpl.ExecuteTemplate(w, "upload.gohtml", nil)
+		checkInternalServerError(err, w)
+
+		return
 	}
-	var homework Homework
 
+	err = r.ParseMultipartForm(32 << 20)
+
+	if err != nil {
+		panic(err)
+	}
+
+	file, handler, err := r.FormFile("upload-file")
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer file.Close()
+
+	f, err := os.OpenFile("./posts/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+
+	if err != nil {
+		panic(err)
+		return
+	}
+
+	defer f.Close()
+	io.Copy(f, file)
+
+	var homework Homework
 	fmt.Println(homework)
 
 	// Save to database
@@ -116,7 +146,7 @@ func newPost(w http.ResponseWriter, r *http.Request) {
 	//	panic(err)
 	//}
 
-	http.Redirect(w, r, "/", http.StatusMovedPermanently)
+	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
 
 func indexHandler(w http.ResponseWriter, _ *http.Request) {

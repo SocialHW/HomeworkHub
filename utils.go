@@ -15,6 +15,6 @@ func checkInternalServerError(err error, w http.ResponseWriter) {
 
 func isAuthenticated(w http.ResponseWriter, r *http.Request) {
 	if !authenticated {
-		http.Redirect(w, r, "/", http.StatusMovedPermanently)
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 	}
 }
