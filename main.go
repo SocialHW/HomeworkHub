@@ -40,7 +40,8 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir("./static"))))
 
 	// Route for posts
-	http.HandleFunc("/h/*", postViewHandler)
+	http.HandleFunc("/h/", postViewHandler)
+	http.Handle("/h/img/", http.StripPrefix("/h/img", http.FileServer(http.Dir("./posts"))))
 
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/logout", logoutHandler)

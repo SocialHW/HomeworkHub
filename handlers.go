@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"strconv"
+	"strings"
 )
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
@@ -41,8 +43,8 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 		_, err = database.Exec("INSERT INTO userInfo(username, password) VALUES(?, ?);", username, hashedPassword)
 
-		fmt.Println("Created user: ", username)
 		checkInternalServerError(err, w)
+		http.Redirect(w, r, "/login", http.StatusMovedPermanently)
 	case err != nil:
 		http.Error(w, "loi: "+err.Error(), http.StatusBadRequest)
 		return
@@ -112,7 +114,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	checkInternalServerError(err, w)
 	defer rows.Close()
-	var count int
+	var count int64
 	for rows.Next() {
 		if err := rows.Scan(&count); err != nil {
 			log.Fatal(err)
@@ -129,14 +131,11 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer file.Close()
 
+	// Regex to match the file extension
 	reg, _ := regexp.Compile("\\.[0-9a-z]{1,5}$")
-
 	post.Extension = string(reg.Find([]byte(handler.Filename)))
 
 	filename := fmt.Sprintf("%d%s", post.Id, post.Extension)
-
-	_, err = database.Exec("INSERT INTO postInfo(username, title, extension) VALUES(?, ?, ?);",
-		post.Username, post.Title, post.Extension)
 
 	f, err := os.OpenFile("./posts/"+filename, os.O_WRONLY|os.O_CREATE, 0666)
 
@@ -146,7 +145,8 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	_, err = io.Copy(f, file)
 	checkInternalServerError(err, w)
 
-	fmt.Println(post)
+	_, err = database.Exec("INSERT INTO postInfo(username, title, extension) VALUES(?, ?, ?);",
+		post.Username, post.Title, post.Extension)
 
 	http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }
@@ -179,17 +179,23 @@ func indexHandler(w http.ResponseWriter, _ *http.Request) {
 
 func postViewHandler(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Println(r.RequestURI)
+	var post Post
+
+	post.Id, _ = strconv.ParseInt(strings.Replace(r.URL.Path, "/h/", "", 1), 10, 32)
+
+	err := database.QueryRow("SELECT title, username, extension FROM postInfo WHERE postId=?;",
+		post.Id).Scan(&post.Title, &post.Username, &post.Extension)
+
+	checkInternalServerError(err, w)
 
 	// TODO: Build this struct based on the information from the database
 	hw := Homework{
-		Id:        123,
-		Title:     "[CS][370][Confer] First Homework",
-		PostImage: "image1.jpeg",
+		Title:     post.Title,
+		PostImage: fmt.Sprintf("%d%s", post.Id, post.Extension),
 		Comments:  []string{"This post is great!", "No, it really isn't"},
 	}
 
-	err := tpl.ExecuteTemplate(w, "homework.gohtml", hw)
+	err = tpl.ExecuteTemplate(w, "homework.gohtml", hw)
 
 	checkInternalServerError(err, w)
 }

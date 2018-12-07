@@ -1,7 +1,7 @@
 package main
 
 type Homework struct {
-	Id        uint
+	Id        int64
 	Title     string
 	PostImage string
 	Comments  []string
@@ -13,7 +13,7 @@ type User struct {
 }
 
 type Post struct {
-	Id        int    `json:"id"`
+	Id        int64  `json:"id"`
 	Username  string `json:"username"`
 	Title     string `json:"title"`
 	Extension string `json:"title"`
