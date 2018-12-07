@@ -11,10 +11,6 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Register method: %s\n", r.Method)
 
 	if r.Method != "POST" {
-		if authenticated {
-			http.Redirect(w, r, "/", http.StatusMovedPermanently)
-			return
-		}
 
 		err := tpl.ExecuteTemplate(w, "register.gohtml", nil)
 		checkInternalServerError(err, w)
@@ -30,19 +26,15 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check existence of user
 	var user User
-	err := database.QueryRow("SELECT username, password FROM userInfo;",
+	err := database.QueryRow("SELECT username, password FROM userInfo WHERE username=?;",
 		username).Scan(&user.Username, &user.Password)
 
 	switch {
 	// user is available
 	case err == sql.ErrNoRows:
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-		//checkInternalServerError(err, w)
+		checkInternalServerError(err, w)
 		// insert to database
-		err = database.Ping()
-		if err != nil {
-			panic(err)
-		}
 
 		_, err = database.Exec("INSERT INTO userInfo(username, password) VALUES(?, ?);", username, hashedPassword)
 
@@ -61,11 +53,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("login method: %s\n", r.Method)
 
 	if r.Method != "POST" {
-		if authenticated {
-			http.Redirect(w, r, "/", http.StatusMovedPermanently)
-			return
-		}
-
 		err := tpl.ExecuteTemplate(w, "login.gohtml", nil)
 		checkInternalServerError(err, w)
 
