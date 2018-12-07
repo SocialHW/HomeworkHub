@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 )
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("Register method: %s\n", r.Method)
 
 	if r.Method != "POST" {
 
@@ -52,8 +52,6 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Printf("login method: %s\n", r.Method)
-
 	if r.Method != "POST" {
 		err := tpl.ExecuteTemplate(w, "login.gohtml", nil)
 		checkInternalServerError(err, w)
@@ -75,9 +73,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	// validate password
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 
-	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
-	}
+	checkInternalServerError(err, w)
 
 	authenticated = true
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
@@ -92,10 +88,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	isAuthenticated(w, r)
 
-	fmt.Printf("Upload method: %s\n", r.Method)
-
 	if r.Method == "GET" {
-
 		err := tpl.ExecuteTemplate(w, "upload.gohtml", nil)
 		checkInternalServerError(err, w)
 
@@ -104,30 +97,50 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = r.ParseMultipartForm(32 << 20)
 
-	if err != nil {
-		panic(err)
-	}
+	checkInternalServerError(err, w)
+
+	var post Post
 
 	file, handler, err := r.FormFile("upload-file")
-
-	if err != nil {
-		panic(err)
-	}
-
-	defer file.Close()
-
-	f, err := os.OpenFile("./posts/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
 
 	if err != nil {
 		panic(err)
 		return
 	}
 
+	rows, err := database.Query("SELECT COUNT(*) FROM postInfo")
+	checkInternalServerError(err, w)
+	defer rows.Close()
+	var count int
+	for rows.Next() {
+		if err := rows.Scan(&count); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	post.Id = count + 1
+
+	post.Title = r.FormValue("title")
+
+	log.Printf("ID: %d\n", post.Id)
+
+	checkInternalServerError(err, w)
+
+	defer file.Close()
+
+	filename := fmt.Sprintf("%d%s", post.Id, handler.Filename)
+
+	_, err = database.Exec("INSERT INTO postInfo(username, title, extension) VALUES(?, ?, ?);",
+		post.Username, post.Title, post.Extension)
+
+	f, err := os.OpenFile("./posts/"+filename, os.O_WRONLY|os.O_CREATE, 0666)
+
+	checkInternalServerError(err, w)
+
 	defer f.Close()
 	io.Copy(f, file)
 
-	var homework Homework
-	fmt.Println(homework)
+	fmt.Println(post)
 
 	// Save to database
 	//stmt, err := database.Prepare(`

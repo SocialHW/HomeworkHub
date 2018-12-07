@@ -8,7 +8,14 @@ type Homework struct {
 }
 
 type User struct {
-	Id       int64  `json:"id"`
+	Id       int    `json:"id"`
 	Username string `json:"username"`
 	Password string `json:"password"`
+}
+
+type Post struct {
+	Id        int    `json:"id"`
+	Username  string `json:"username"`
+	Title     string `json:"title"`
+	Extension string `json:"title"`
 }

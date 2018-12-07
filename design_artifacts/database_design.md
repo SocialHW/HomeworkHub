@@ -6,7 +6,7 @@ ___
 
 There should be a Posts table with the following columns:
 
-post_id primary key, auto inc INTEGER | username TEXT | title TEXT | file_path TEXT 
+post_id primary key, auto inc INTEGER | username TEXT | title TEXT | extension TEXT 
 ___
 
 There should be a Comments table with the following columns:

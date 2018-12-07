@@ -64,13 +64,13 @@ func initializeDb() {
 		panic(err)
 	}
 
-	statement, _ = database.Prepare("CREATE TABLE IF NOT EXISTS post_info (post_id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, title TEXT, file_path TEXT)")
+	statement, _ = database.Prepare("CREATE TABLE IF NOT EXISTS postInfo (postId INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, title TEXT, extension TEXT)")
 	_, err = statement.Exec()
 	if err != nil {
 		panic(err)
 	}
 
-	statement, _ = database.Prepare("CREATE TABLE IF NOT EXISTS comment_section (post_id INTEGER, username TEXT, comment TEXT)")
+	statement, _ = database.Prepare("CREATE TABLE IF NOT EXISTS commentSection (postId INTEGER, username TEXT, comment TEXT)")
 	_, err = statement.Exec()
 	if err != nil {
 		panic(err)
