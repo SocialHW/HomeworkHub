@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -19,10 +18,16 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+
+	registerDataHandler(w, r)
 }
 
 func registerDataHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
+	//err = r.ParseForm()
+	//
+	//if err != nil {
+	//	panic(err)
+	//}
 
 	// grab user info
 	username := r.FormValue("username")
@@ -32,7 +37,7 @@ func registerDataHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check existence of user
 	var user User
-	err := database.QueryRow("SELECT username, password",
+	err := database.QueryRow("SELECT username, password FROM userInfo;",
 		username).Scan(&user.Username, &user.Password)
 
 	switch {
@@ -77,7 +82,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// query database to get match username
 	var user User
-	err := database.QueryRow("SELECT username, password FROM users WHERE username=?",
+	err := database.QueryRow("SELECT username, password FROM userInfo WHERE username=?;",
 		username).Scan(&user.Username, &user.Password)
 
 	checkInternalServerError(err, w)
@@ -133,7 +138,7 @@ func listHandler(w http.ResponseWriter, r *http.Request) {
 func newPost(w http.ResponseWriter, r *http.Request) {
 	isAuthenticated(w, r)
 	if r.Method != "POST" {
-		http.Redirect(w, r, "/", 301)
+		http.Redirect(w, r, "/", http.StatusMovedPermanently)
 	}
 	var homework Homework
 
@@ -156,10 +161,10 @@ func newPost(w http.ResponseWriter, r *http.Request) {
 	//	panic(err)
 	//}
 
-	http.Redirect(w, r, "/", 301)
+	http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
+func indexHandler(w http.ResponseWriter, _ *http.Request) {
 
 	// TODO: Query the database to populate this array.
 	posts := []Homework{
@@ -185,7 +190,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func postViewHandler(w http.ResponseWriter, req *http.Request) {
+func postViewHandler(w http.ResponseWriter, _ *http.Request) {
 
 	// TODO: Build this struct based on the information from the database
 	hw := Homework{
@@ -198,18 +203,4 @@ func postViewHandler(w http.ResponseWriter, req *http.Request) {
 	err := tpl.ExecuteTemplate(w, "homework.gohtml", hw)
 
 	checkInternalServerError(err, w)
-}
-
-func checkInternalServerError(err error, w http.ResponseWriter) {
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-}
-
-func isAuthenticated(w http.ResponseWriter, r *http.Request) {
-	if !authenticated {
-		http.Redirect(w, r, "/login", 301)
-	}
 }

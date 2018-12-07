@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	database, _ := sql.Open("sqlite3", "./homeworkHub.db")
+	database, _ := sql.Open("sqlite3", "./db.sqlite3")
 	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS userInfo (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT)")
 	statement.Exec()
 }
