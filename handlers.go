@@ -47,7 +47,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "loi: "+err.Error(), http.StatusBadRequest)
 		return
 	default:
-		http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
+		http.Redirect(w, r, "/login", http.StatusMovedPermanently)
 	}
 }
 
@@ -65,7 +65,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 
 	// query database to get match username
-	var user User
 	err := database.QueryRow("SELECT username, password FROM userInfo WHERE username=?;",
 		username).Scan(&user.Username, &user.Password)
 
@@ -77,7 +76,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	checkInternalServerError(err, w)
 
 	authenticated = true
-	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+
+	http.Redirect(w, r, "/", http.StatusMovedPermanently)
 
 }
 
@@ -102,14 +102,14 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	var post Post
 
+	post.Username = user.Username
+
 	file, handler, err := r.FormFile("upload-file")
 
-	if err != nil {
-		panic(err)
-		return
-	}
+	checkInternalServerError(err, w)
 
 	rows, err := database.Query("SELECT COUNT(*) FROM postInfo")
+
 	checkInternalServerError(err, w)
 	defer rows.Close()
 	var count int
@@ -131,7 +131,9 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	reg, _ := regexp.Compile("\\.[0-9a-z]{1,5}$")
 
-	filename := fmt.Sprintf("%d%s", post.Id, reg.Find([]byte(handler.Filename)))
+	post.Extension = string(reg.Find([]byte(handler.Filename)))
+
+	filename := fmt.Sprintf("%d%s", post.Id, post.Extension)
 
 	_, err = database.Exec("INSERT INTO postInfo(username, title, extension) VALUES(?, ?, ?);",
 		post.Username, post.Title, post.Extension)
@@ -146,7 +148,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(post)
 
-	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }
 
 func indexHandler(w http.ResponseWriter, _ *http.Request) {
@@ -175,7 +177,9 @@ func indexHandler(w http.ResponseWriter, _ *http.Request) {
 
 }
 
-func postViewHandler(w http.ResponseWriter, _ *http.Request) {
+func postViewHandler(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println(r.RequestURI)
 
 	// TODO: Build this struct based on the information from the database
 	hw := Homework{

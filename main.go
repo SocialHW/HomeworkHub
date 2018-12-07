@@ -17,6 +17,7 @@ var (
 	authenticated = false
 	database      *sql.DB
 	err           error
+	user          User
 )
 
 func init() {
@@ -32,14 +33,14 @@ func main() {
 		}
 	}()
 
-	/* Route for index page */
+	// Route for index page
 	http.HandleFunc("/", indexHandler)
 
 	// Route for static assets
 	http.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir("./static"))))
 
 	// Route for posts
-	http.HandleFunc("/h", postViewHandler)
+	http.HandleFunc("/h/*", postViewHandler)
 
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/logout", logoutHandler)
