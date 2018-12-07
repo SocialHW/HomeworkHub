@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
 
@@ -25,7 +26,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
-	fmt.Printf("Name entered: %s \tPass entered: %s\n", username, password)
+	fmt.Printf("Name entered: %s\tPass entered: %s\n", username, password)
 
 	// Check existence of user
 	var user User
@@ -35,7 +36,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	switch {
 	// user is available
 	case err == sql.ErrNoRows:
-		//hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		//checkInternalServerError(err, w)
 		// insert to database
 		err = database.Ping()
@@ -43,7 +44,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 
-		_, err = database.Exec("INSERT INTO userInfo(username, password) VALUES(?, ?);", username, password)
+		_, err = database.Exec("INSERT INTO userInfo(username, password) VALUES(?, ?);", username, hashedPassword)
 
 		fmt.Println("Created user: ", username)
 		checkInternalServerError(err, w)
@@ -83,9 +84,9 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	checkInternalServerError(err, w)
 
 	// validate password
-	//err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 
-	if err != nil || password != user.Password {
+	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusMovedPermanently)
 	}
 
