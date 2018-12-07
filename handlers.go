@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 )
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
@@ -128,7 +129,9 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer file.Close()
 
-	filename := fmt.Sprintf("%d%s", post.Id, handler.Filename)
+	reg, _ := regexp.Compile("\\.[0-9a-z]{1,5}$")
+
+	filename := fmt.Sprintf("%d%s", post.Id, reg.Find([]byte(handler.Filename)))
 
 	_, err = database.Exec("INSERT INTO postInfo(username, title, extension) VALUES(?, ?, ?);",
 		post.Username, post.Title, post.Extension)
