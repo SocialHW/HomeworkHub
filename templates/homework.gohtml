@@ -5,10 +5,24 @@
     {{template "top_bar" .}}
 
 
-    <div>PostImage: <img src="/h/img/{{.Hw.PostImage}}" style="max-height: 40vh"></div>
+    <div class="col-9 jumbotron">
+        <h3>{{.Hw.Title}}</h3>
+        <img src="/h/img/{{.Hw.PostImage}}"
+             class="mx-auto d-block col-12">
+    </div>
 
 
-    <div>Comments: <br> {{range .Hw.Comments}} {{.}} <br> {{end}}</div>
+    <div>
+        {{ if eq (len .Hw.Comments) 0 }}
+            <p>There are no comments on this post!</p>
+        {{else}}
+            <h5><b>Comments: </b></h5>
+            {{range $comment := .Hw.Comments}}
+                <p>{{$comment}}</p>
+            {{end}}
+        {{end}}
+
+    </div>
 
     {{if .Authenticated}}
         <form action="/comment/{{.Hw.Id}}" method="post">
