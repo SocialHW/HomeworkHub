@@ -5,7 +5,7 @@
     {{template "top_bar" .}}
 
 
-    <div class="col-9 jumbotron">
+    <div class="col-9 jumbotron post">
         <h3>{{.Hw.Title}}</h3>
         <img src="/h/img/{{.Hw.PostImage}}"
              class="mx-auto d-block col-12">
@@ -13,7 +13,7 @@
 
 
     <div>
-        {{ if eq (len .Hw.Comments) 0 }}
+        {{if eq (len .Hw.Comments) 0}}
             <p>There are no comments on this post!</p>
         {{else}}
             <h5><b>Comments: </b></h5>
@@ -26,8 +26,9 @@
 
     {{if .Authenticated}}
         <form action="/comment/{{.Hw.Id}}" method="post">
-            <label>Add comment</label>
-            <input type="text" name="comment" required>
+            <label>
+                Add comment <input type="text" name="comment" required>
+            </label>
             <button type="submit">Submit</button>
         </form>
     {{end}}
