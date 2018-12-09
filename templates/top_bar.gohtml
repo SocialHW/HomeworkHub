@@ -3,9 +3,14 @@
         <h1><a href="/">Social HW</a></h1>
 
         {{if not .Authenticated}}
-            <span id="account-prompt"><a href="/login">Login</a> or <a href="register">Register</a></span>
+            <span id="account-prompt">
+                <a href="/login">Login</a> or <a href="register">Register</a>
+            </span>
         {{else}}
-            <span id="account-prompt"><a href="/logout">Logout</a></span>
+            <span id="account-prompt">
+                <a href="/upload"><button id="upload-button" type="button" class="btn btn-primary">Upload</button></a>
+                <a href="/logout">Logout</a>
+            </span>
         {{end}}
     </div>
 {{end}}
