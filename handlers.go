@@ -210,7 +210,15 @@ func postViewHandler(w http.ResponseWriter, r *http.Request) {
 		Comments:  comments,
 	}
 
-	err = tpl.ExecuteTemplate(w, "homework.gohtml", hw)
+	postViewData := struct {
+		Authenticated bool
+		Hw            Homework
+	}{
+		authenticated,
+		hw,
+	}
+
+	err = tpl.ExecuteTemplate(w, "homework.gohtml", postViewData)
 
 	checkInternalServerError(err, w)
 }

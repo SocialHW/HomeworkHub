@@ -2,18 +2,18 @@
 
 <div class="container">
 
-    {{template "top_bar"}}
+    {{template "top_bar" .}}
 
     <p>
-        <div>PostImage: <img src="/h/img/{{.PostImage}}" style="max-height: 40vh"></div>
+        <div>PostImage: <img src="/h/img/{{.Hw.PostImage}}" style="max-height: 40vh"></div>
 
 
-        <div>Comments: <br> {{range .Comments}} {{.}} <br> {{end}}</div>
+        <div>Comments: <br> {{range .Hw.Comments}} {{.}} <br> {{end}}</div>
 
 
     </p>
 
-    <form action="/comment/{{.Id}}" method="post">
+    <form action="/comment/{{.Hw.Id}}" method="post">
         <label>Add comment</label>
         <input type="text" name="comment" required>
         <button type="submit">Submit</button>
