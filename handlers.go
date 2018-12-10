@@ -207,6 +207,7 @@ func postViewHandler(w http.ResponseWriter, r *http.Request) {
 		Id:        post.Id,
 		Title:     post.Title,
 		PostImage: fmt.Sprintf("%d%s", post.Id, post.Extension),
+		Username:  post.Username,
 		Comments:  comments,
 	}
 
