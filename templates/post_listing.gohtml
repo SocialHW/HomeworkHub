@@ -3,12 +3,16 @@
         <div class="jumbotron post">
             <a href="/h/{{.Id}}">
                 <h3>{{.Title}}</h3>
+            </a>
+
+            <b>{{.Username}}</b>
+
+            <a href="/h/{{.Id}}">
                 <div class="preview">
                     <img class="img-fluid"
                          src="/h/img/{{.PostImage}}">
                 </div>
             </a>
-            <b>{{.Username}}</b>
         </div>
     </div>
 {{end}}

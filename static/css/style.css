@@ -30,3 +30,7 @@ a {
 .header {
     display: flow-root;
 }
+
+#upload-button {
+    margin-right: 3em;
+}
