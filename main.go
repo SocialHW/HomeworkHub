@@ -5,78 +5,84 @@
 package main
 
 import (
+	"database/sql"
+	_ "github.com/mattn/go-sqlite3"
 	"html/template"
 	"log"
 	"net/http"
 )
 
-var tpl *template.Template
+var (
+	tpl           *template.Template
+	authenticated = false
+	database      *sql.DB
+	err           error
+	user          User
+)
 
 func init() {
 	tpl = template.Must(template.ParseGlob("templates/*.gohtml"))
 }
 
 func main() {
-	/* Route for index page */
-	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		err := tpl.ExecuteTemplate(w, "index.gohtml", struct{ Posts []homework }{
-			[]homework{
-				{
-					Id:        123,
-					Title:     "[CS][370][Confer] First Homework",
-					PostImage: "image1.jpeg",
-					Upvotes:   1,
-					Downvotes: 99,
-					Comments:  []string{"This post is great!", "No, it really isn't"},
-					Tags:      []string{"2018", "MAT", "413", "Andriamanalimanana"},
-				},
-			},
-		})
-
+	initializeDb()
+	defer func() {
+		err = database.Close()
 		if err != nil {
-			log.Println(err)
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-			return
+			panic(err)
 		}
-	})
+	}()
+
+	// Route for index page
+	http.HandleFunc("/", indexHandler)
 
 	// Route for static assets
 	http.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir("./static"))))
 
-	/* Route for posts */
-	http.HandleFunc("/h/", func(w http.ResponseWriter, req *http.Request) {
+	// Route for posts
+	http.HandleFunc("/h/", postViewHandler)
+	http.Handle("/h/img/", http.StripPrefix("/h/img", http.FileServer(http.Dir("./posts"))))
 
-		hw := homework{
-			Id:        123,
-			Title:     "[CS][370][Confer] First Homework",
-			PostImage: "image1.jpeg",
-			Upvotes:   1,
-			Downvotes: 99,
-			Comments:  []string{"This post is great!", "No, it really isn't"},
-			Tags:      []string{"2018", "MAT", "413", "Andriamanalimanana"},
-		}
-
-		err := tpl.ExecuteTemplate(w, "homework.gohtml", hw)
-
-		if err != nil {
-			log.Println(err)
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-			return
-		}
-	})
+	http.HandleFunc("/login", loginHandler)
+	http.HandleFunc("/logout", logoutHandler)
+	http.HandleFunc("/register", registerHandler)
+	http.HandleFunc("/upload", uploadHandler)
+	http.HandleFunc("/comment/", commentHandler)
 
 	port := ":3000"
 
 	log.Printf("Server running on port %s...\n", port)
-	http.ListenAndServe(port, nil)
+	serve := http.ListenAndServe(port, nil)
+
+	if serve != nil {
+		panic(serve)
+	}
 }
 
-type homework struct {
-	Id        uint
-	Title     string
-	PostImage string
-	Upvotes   uint
-	Downvotes uint
-	Comments  []string
-	Tags      []string
+func initializeDb() {
+	database, _ = sql.Open("sqlite3", "./db.sqlite3")
+	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS userInfo (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT)")
+	_, err = statement.Exec()
+	if err != nil {
+		panic(err)
+	}
+
+	statement, _ = database.Prepare("CREATE TABLE IF NOT EXISTS postInfo (postId INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, title TEXT, extension TEXT)")
+	_, err = statement.Exec()
+	if err != nil {
+		panic(err)
+	}
+
+	statement, _ = database.Prepare("CREATE TABLE IF NOT EXISTS commentSection (postId INTEGER, username TEXT, comment TEXT)")
+	_, err = statement.Exec()
+	if err != nil {
+		panic(err)
+	}
+
+	err = database.Ping()
+
+	if err != nil {
+		panic(err)
+	}
+
 }
