@@ -15,10 +15,19 @@ import (
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 
+	type registerPageDataStruct = struct {
+		UsernameTaken    bool
+		PasswordMismatch bool
+		Authenticated    bool
+	}
+
 	if r.Method != "POST" {
 
-		err := tpl.ExecuteTemplate(w, "register.gohtml", nil)
-		checkInternalServerError(err, w)
+		if !authenticated {
+			_ = tpl.ExecuteTemplate(w, "register.gohtml", registerPageDataStruct{false, false, false})
+		} else {
+			http.Redirect(w, r, "/", http.StatusMovedPermanently)
+		}
 
 		return
 	}
@@ -26,8 +35,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	// grab user info
 	username := r.FormValue("username")
 	password := r.FormValue("password")
-
-	fmt.Printf("Name entered: %s\tPass entered: %s\n", username, password)
+	passAgain := r.FormValue("pass-again")
 
 	// Check existence of user
 	var user User
@@ -36,7 +44,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch {
 	// user is available
-	case err == sql.ErrNoRows:
+	case err == sql.ErrNoRows && password == passAgain:
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		checkInternalServerError(err, w)
 		// insert to database
@@ -45,11 +53,8 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 		checkInternalServerError(err, w)
 		http.Redirect(w, r, "/login", http.StatusMovedPermanently)
-	case err != nil:
-		http.Error(w, "loi: "+err.Error(), http.StatusBadRequest)
-		return
 	default:
-		http.Redirect(w, r, "/login", http.StatusMovedPermanently)
+		_ = tpl.ExecuteTemplate(w, "register.gohtml", registerPageDataStruct{err != sql.ErrNoRows, password != passAgain, false})
 	}
 }
 
