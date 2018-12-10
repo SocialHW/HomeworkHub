@@ -1,18 +1,22 @@
 {{template "header"}}
 
-{{template "top_bar" .}}
+<div class="container">
+    {{template "top_bar" .}}
 
-<form action="/login" method="post">
-    Username:<input type="text" name="username">
-    Password:<input type="password" name="password">
-    <input type="submit" value="Login">
-</form>
+    <form action="/login" method="post">
+        <p>Username:<input type="text" name="username"></p>
 
-{{if .Failed}}
-    <div class="alert alert-danger" role="alert">
-        Incorrect login!
-    </div>
-{{end}}
+        <p>Password:<input type="password" name="password"></p>
+
+        <input type="submit" value="Login">
+    </form>
+
+    {{if .Failed}}
+        <div class="alert alert-danger" role="alert">
+            Incorrect login!
+        </div>
+    {{end}}
+</div>
 
 
 {{template "footer"}}
