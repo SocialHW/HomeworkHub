@@ -55,9 +55,18 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 
+	type loginPageDataStruct = struct {
+		Failed        bool
+		Authenticated bool
+	}
+
 	if r.Method != "POST" {
-		err := tpl.ExecuteTemplate(w, "login.gohtml", nil)
-		checkInternalServerError(err, w)
+		if !authenticated {
+			_ = tpl.ExecuteTemplate(w, "login.gohtml", loginPageDataStruct{false, false})
+
+		} else {
+			http.Redirect(w, r, "/", http.StatusMovedPermanently)
+		}
 
 		return
 	}
@@ -67,19 +76,18 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 
 	// query database to get match username
-	err := database.QueryRow("SELECT username, password FROM userInfo WHERE username=?;",
+	_ = database.QueryRow("SELECT username, password FROM userInfo WHERE username=?;",
 		username).Scan(&user.Username, &user.Password)
-
-	checkInternalServerError(err, w)
 
 	// validate password
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 
-	checkInternalServerError(err, w)
-
-	authenticated = true
-
-	http.Redirect(w, r, "/", http.StatusMovedPermanently)
+	if err == nil {
+		authenticated = true
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	} else {
+		_ = tpl.ExecuteTemplate(w, "login.gohtml", loginPageDataStruct{true, false})
+	}
 
 }
 

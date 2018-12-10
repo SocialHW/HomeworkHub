@@ -1,10 +1,18 @@
 {{template "header"}}
 
+{{template "top_bar" .}}
+
 <form action="/login" method="post">
     Username:<input type="text" name="username">
     Password:<input type="password" name="password">
     <input type="submit" value="Login">
 </form>
+
+{{if .Failed}}
+    <div class="alert alert-danger" role="alert">
+        Incorrect login!
+    </div>
+{{end}}
 
 
 {{template "footer"}}
