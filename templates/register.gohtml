@@ -1,0 +1,46 @@
+{{template "header"}}
+
+<div class="container">
+
+    {{template "top_bar" .}}
+
+    <form action="/register" method="post">
+
+        <p>
+            <label>Username: </label>
+            <input type="text" name="username" required>
+        </p>
+
+
+        <p>
+            <label>Password: </label>
+            <input type="password" name="password" required>
+        </p>
+
+        <p>
+            <label>Password again: </label>
+            <input type="password" name="pass-again" required>
+        </p>
+
+        <input type="submit" value="Register">
+
+        <div>
+            <a href="/login">Login</a>
+        </div>
+    </form>
+
+    {{if .UsernameTaken}}
+        <div class="alert alert-danger" role="alert">
+            Username taken!
+        </div>
+    {{end}}
+
+    {{if .PasswordMismatch}}
+        <div class="alert alert-danger" role="alert">
+            Passwords do not match!
+        </div>
+    {{end}}
+
+</div>
+
+{{template "footer"}}

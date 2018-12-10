@@ -1,0 +1,11 @@
+{{template "header"}}
+
+<!--enctype for image file uploads-->
+<form enctype="multipart/form-data" action="/upload" method="post">
+    <input type="text" name="title">
+    <input type="file" name="upload-file"/>
+    <input type="hidden" name="token" value="{{.}}"/>
+    <input type="submit" value="upload"/>
+</form>
+
+{{template "footer"}}

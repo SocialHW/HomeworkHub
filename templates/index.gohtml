@@ -1,33 +1,12 @@
 {{template "header"}}
 
 <div class="container">
-    {{template "top_bar"}}
+    {{template "top_bar" .}}
 
     <div class="row">
         {{range .Posts}} {{template "post_listing" .}} {{end}}
 
         <div class="col-3">
-            <!-- Subfile system -->
-            <details>
-                <summary>[CS]</summary>
-                <details>
-                    <summary>[370]</summary>
-                    <a href="#">[Confer]</a>
-                </details>
-
-                <details>
-                    <summary>[240]</summary>
-                    <a href="#">[Sarner]</a>
-                </details>
-            </details>
-
-            <details>
-                <summary>[MAT]</summary>
-                <details>
-                    <summary>[413]</summary>
-                    <a href="#">[Andriamanalimanana]</a>
-                </details>
-            </details>
         </div>
     </div>
 </div>
