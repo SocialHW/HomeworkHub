@@ -7,20 +7,31 @@ studying ability*
 
 ## Installing
 
+To run this project, `golang-go` and `git` must be installed on your system. They can both be downloaded using the
+command:
+```bash
+sudo apt install golang-go git -y
+```
+
 Download the source using the command:
 
 ```bash
 git clone https://github.com/SocialHW/HomeworkHub.git
 ``` 
 
-Running this project no longer requires any external dependencies to be running, such as MySQL.
+Running this project no longer requires any external dependencies to be running, such as MySQL. However, you must 
+install the third party libraries we are using for our cryptographic functions, and for interacting with our 
+SQLite3 database. To do so, run the command:
+```bash
+go get golang.org/x/crypto/bcrypt github.com/mattn/go-sqlite3
+```
 
 ## Building and Running
 
 To run the project as a Go script, simply run this command from the root directory of the project:
 
 ```bash
-go run main.go
+go run *.go
 ```
 
 
